@@ -6,15 +6,62 @@
         <hr/>
     </div>
     <div class="mx-2 px-2">
-        <EditForm FormName="ProductCreate" Model="Product">
+        <EditForm FormName="ProductCreate" Model="Product"  OnValidSubmit="HandleProductCreate" OnInvalidSubmit="HandleProductCreateInvalid">
+            @* OnSubmit="HandleProductCreate" *@
+            @* odpowiedzialny za walidacje *@
+            <DataAnnotationsValidator />
+            @* odpowiedzialny za napisy o bledach razem *@
+            @* <ValidationSummary/> *@
             <div class="form-group py-2">
                 Product Name
                 <InputText class="form-control" @bind-Value="@Product.Name" />
+                <ValidationMessage For="@(() => Product.Name)" />
             </div>
+            <div class="form-group py-2">
+                Price
+                <InputNumber class="form-control" @bind-Value="@Product.Price" />
+                <ValidationMessage For="@(() => Product.Price)" />
+            </div>
+            <div class="form-group py-2">
+                Category
+                <InputSelect class="form-select" @bind-Value="@Product.Category" >
+                    @foreach(var cat in Enum.GetValues(typeof(Category)))
+                    {
+                        <option value="@cat">@cat</option>
+                    }
+                </InputSelect>
+            </div>
+            <div class="form-group py-2">
+                IsActive
+                <InputCheckbox @bind-Value="@Product.IsActive" />
+            </div>
+            <div class="form-group py-2">
+                Available After
+                <InputDate class="form-control" @bind-Value="@Product.AvailableAfter" />
+            </div>
+            <button type="submit" class="btn btn-primary my-3" style="width:200px;">
+                Create Product
+            </button>
+            <p class="text-success">@(IsProcessing == true ? "Processing..." : "")</p>
         </EditForm>
     </div>
 </div>
 
 @code {
     public Product Product { get; set; } = new Product();
+    private bool IsProcessing = false;
+
+    private async Task HandleProductCreate()
+    {
+        IsProcessing = true;
+        await Task.Delay(3000);
+        IsProcessing = false;
+    }
+
+    private async Task HandleProductCreateInvalid()
+    {
+        IsProcessing = true;
+        await Task.Delay(10000);
+        IsProcessing = false;
+    }
 }
